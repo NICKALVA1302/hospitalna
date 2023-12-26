@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 const TelegramBot = require('node-telegram-bot-api');
 
 dotenv.config();
-let validar_saludo=false;
+let validar_saludo = false;
 
 // Configuración de la conexión a la base de datos MySQL con tus credenciales
 const dbConnection = mysql.createConnection({
@@ -25,15 +25,39 @@ dbConnection.connect((err) => {
   }
 });
 
-const telegramToken = '6908968073:AAGA0xx_RaXxzXOt_efC9u51kZkvlHQdoU4';
-const bot = new TelegramBot(telegramToken, { polling: false });
+// Promisificar la función de consulta para poder utilizar async/await
+const dbQueryAsync = util.promisify(dbConnection.query).bind(dbConnection);
 
+async function SaludoBD(textoUsuario) {
+  try {
+    const results = await dbQueryAsync('SELECT respuesta FROM bot_Saludo WHERE texto_usuario = ?', [textoUsuario]);
+    return results;
+  } catch (error) {
+    console.error('Error al realizar la consulta en la base de datos', error);
+    throw new Error('Hubo un error al procesar tu solicitud.');
+  }
+}
 
 async function Saludo(agent) {
-  // obtenerTodosLosTelefonosYEnviarMensajes()
-   validar_saludo=true;
-   agent.add('¡Saludos! 🤖✨');
- }
+  validar_saludo = true;
+  agent.add('¡Saludos! 🤖✨');
+
+  const textoUsuario = agent.query;
+
+  try {
+    const results = await consultarBaseDeDatos(textoUsuario);
+
+    const rows = results;
+    if (rows.length > 0) {
+      const respuesta = rows[0].respuesta;
+      agent.add(respuesta);
+    } else {
+      agent.add('Lo siento, no tengo una respuesta para eso.');
+    }
+  } catch (error) {
+    agent.add(error.message);
+  }
+}
 
 app.get("/", (req, res) => {
   res.send("¡Bienvenido, estamos dentro!");
