@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
   res.send("¡Bienvenido, estamos dentro!");
 });
 
-app.post("/webhook", express.json(), (request, response) => {
+app.post("/", express.json(), (request, response) => {
   const agent = new WebhookClient({ request, response });
   let intentMap = new Map();
   intentMap.set('Saludo', Saludo);
