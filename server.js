@@ -4,6 +4,7 @@ const { WebhookClient } = require('dialogflow-fulfillment');
 const mysql = require('mysql');
 const dotenv = require('dotenv');
 const TelegramBot = require('node-telegram-bot-api');
+const util = require('util');
 
 dotenv.config();
 let validar_saludo = false;
