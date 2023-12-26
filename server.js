@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const TelegramBot = require('node-telegram-bot-api');
 
 dotenv.config();
+let validar_saludo=false;
 
 // Configuración de la conexión a la base de datos MySQL con tus credenciales
 const dbConnection = mysql.createConnection({
@@ -27,38 +28,22 @@ dbConnection.connect((err) => {
 const telegramToken = '6908968073:AAGA0xx_RaXxzXOt_efC9u51kZkvlHQdoU4';
 const bot = new TelegramBot(telegramToken, { polling: false });
 
+
+async function Saludo(agent) {
+  // obtenerTodosLosTelefonosYEnviarMensajes()
+   validar_saludo=true;
+   agent.add('¡Saludos! 🤖✨');
+ }
+
 app.get("/", (req, res) => {
   res.send("¡Bienvenido, estamos dentro!");
 });
 
 app.post("/webhook", express.json(), (request, response) => {
   const agent = new WebhookClient({ request, response });
-
-  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
-  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
-
-  // Obtener el texto del usuario desde Dialogflow
-  const textoUsuario = agent.query;
-
-  // Realizar una consulta en la base de datos
-  dbConnection.query('SELECT respuesta FROM bot_Saludo WHERE texto_usuario = ?', [textoUsuario], (error, results) => {
-    if (error) {
-      console.error('Error al realizar la consulta en la base de datos', error);
-      agent.add('Hubo un error al procesar tu solicitud.');
-    } else {
-      const rows = results;
-      if (rows.length > 0) {
-        // Si se encuentra una respuesta en la base de datos, respóndela al usuario
-        const respuesta = rows[0].respuesta;
-        agent.add(respuesta);
-      } else {
-        // Si no se encuentra una respuesta en la base de datos, proporciona una respuesta predeterminada
-        agent.add('Lo siento, no tengo una respuesta para eso.');
-      }
-    }
-    // Cerrar la respuesta del webhook
-    response.json({ fulfillmentText: "¡Webhook recibido exitosamente!" });
-  });
+  let intentMap = new Map();
+  intentMap.set('Saludo', Saludo);
+  agent.handleRequest(intentMap);
 });
 
 const PORT = 3000;
