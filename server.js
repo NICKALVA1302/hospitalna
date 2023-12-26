@@ -11,10 +11,10 @@ let validar_saludo = false;
 
 // Configuración de la conexión a la base de datos MySQL con tus credenciales
 const dbConnection = mysql.createConnection({
-  host: 'mysql-nalvarez.alwaysdata.net',
-  user: 'nalvarez',
+  host: 'mysql-hospitalbot.alwaysdata.net',
+  user: '341462',
   password: '039216685Aa!',
-  database: 'nalvarez_recordatoriosbd',
+  database: 'hospitalbot_bot',
 });
 
 // Realizar la conexión a la base de datos
