@@ -50,7 +50,7 @@ async function Saludo(agent) {
 
     const rows = results;
     if (rows.length > 0) {
-      const respuesta = rows[0].respuesta;
+      const respuesta = rows[0].saludo_respuesta; 
       agent.add(respuesta);
     } else {
       agent.add('Lo siento, no tengo una respuesta para eso.');
