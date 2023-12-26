@@ -46,7 +46,7 @@ async function Saludo(agent) {
   const textoUsuario = agent.query;
 
   try {
-    const results = await consultarBaseDeDatos(textoUsuario);
+    const results = await SaludoBD(textoUsuario);
 
     const rows = results;
     if (rows.length > 0) {
