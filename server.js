@@ -31,7 +31,7 @@ const dbQueryAsync = util.promisify(dbConnection.query).bind(dbConnection);
 
 async function SaludoBD(textoUsuario) {
   try {
-    const results = await dbQueryAsync('SELECT respuesta FROM bot_Saludo WHERE texto_usuario = ?', [textoUsuario]);
+    const results = await dbQueryAsync('SELECT saludo_respuesta FROM bot_Saludo WHERE saludo_texto_usuario = ?', [textoUsuario]);
     return results;
   } catch (error) {
     console.error('Error al realizar la consulta en la base de datos', error);
