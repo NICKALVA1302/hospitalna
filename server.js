@@ -47,29 +47,41 @@ async function Saludo(agent) {
   agent.add('Por favor, ingresa tu número de cédula para continuar.');
 
   // Esperar la respuesta del usuario
-  const respuestaUsuario = agent.query;
-  
+  const respuestaUsuarioCedula = agent.query;
+
   // Verificar si la respuesta es un número de cédula válido
   const regexCedula = /\d{10}/;
-  const match = respuestaUsuario.match(regexCedula);
+  const matchCedula = respuestaUsuarioCedula.match(regexCedula);
 
-  if (match) {
-    const numeroCedula = match[0];
+  if (matchCedula) {
+    const numeroCedula = matchCedula[0];
 
+    // Consultar la tabla doctores usando el número de cédula
     try {
-      const results = await SaludoBD(numeroCedula);
+      const resultsDoctores = await consultarDoctores(numeroCedula);
 
-      if (results.length > 0) {
-        const respuesta = results[0].saludo_respuesta;
-        agent.add(respuesta);
+      if (resultsDoctores.length > 0) {
+        const respuestaDoctores = resultsDoctores[0].nombre; // Cambia "nombre" por el campo que quieras mostrar
+        agent.add(`¡Bienvenido Dr(a). ${respuestaDoctores}!`);
       } else {
-        agent.add('Lo siento, no tengo una respuesta para eso.');
+        agent.add('❌ Lo siento, no encontré información en la tabla de doctores para ese número de cédula.');
       }
     } catch (error) {
       agent.add(error.message);
     }
   } else {
-    agent.add('Por favor, ingresa un número de cédula válido con 10 dígitos numéricos.');
+    agent.add('❌ Por favor, ingresa un número de cédula válido con 10 dígitos numéricos.');
+  }
+}
+
+async function consultarDoctores(numeroCedula) {
+  try {
+    // Realizar la consulta en la tabla de doctores usando el número de cédula
+    const results = await dbQueryAsync('SELECT nombre FROM doctores WHERE cedula = ?', [numeroCedula]);
+    return results;
+  } catch (error) {
+    console.error('Error al realizar la consulta en la tabla de doctores', error);
+    throw new Error('Hubo un error al procesar tu solicitud en la tabla de doctores.');
   }
 }
 
