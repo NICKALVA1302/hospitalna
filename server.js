@@ -50,7 +50,7 @@ async function Saludo(agent) {
   const respuestaUsuarioCedula = agent.query;
 
   // Verificar si la respuesta es un número de cédula válido
-  const regexCedula = /\d{10}/;
+  const regexCedula = /^[0-9]{10}$/; // Ahora la expresión regular asegura exactamente 10 dígitos numéricos
   const matchCedula = respuestaUsuarioCedula.match(regexCedula);
 
   if (matchCedula) {
