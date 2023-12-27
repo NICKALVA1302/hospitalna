@@ -50,53 +50,45 @@ async function SaludoBD(textoUsuario) {
 }
 
 
-
 async function Saludo(agent) {
   validar_saludo = true;
   agent.add('👋 Saludos! Soy 🤖 CuidaBOT ✨, tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
   
   // Preguntar por el número de cédula
   agent.add('Por favor, ingresa tu número de cédula para continuar.');
-
-  // Esperar la respuesta del usuario
-  const respuestaUsuarioCedula = agent.query;
-
-  // Verificar si la respuesta es un número de cédula válido
-  const regexCedula = /^[0-9]{10}$/; // Expresión regular para asegurar exactamente 10 dígitos numéricos
-  const matchCedula = respuestaUsuarioCedula.match(regexCedula);
-
-  if (matchCedula) {
-    const numeroCedula = matchCedula[0];
-
-    try {
-      // Consultar la tabla doctores usando el número de cédula
-      const resultsDoctores = await consultarDoctores(numeroCedula);
-
-      if (resultsDoctores.length > 0) {
-        const respuestaDoctores = resultsDoctores[0].nombre; // Cambia "nombre" por el campo que quieras mostrar
-        agent.add(`¡Bienvenido Dr(a). ${respuestaDoctores}!`);
-      } else {
-        agent.add('❌ Lo siento, no encontré información en la tabla de doctores para ese número de cédula.');
-      }
-    } catch (error) {
-      agent.add(error.message);
-    }
-  } else {
-    // Si la cédula no es válida, pedir que la ingrese nuevamente
-    agent.add('❌ Por favor, ingresa un número de cédula válido con 10 dígitos numéricos.');
-  }
 }
 
-async function consultarDoctores(numeroCedula) {
+async function ConsultarDoctores(agent) {
+  // Obtener la cédula del mensaje del usuario
+  const numeroCedula = obtenerCedulaDesdeMensaje(agent);
+
   try {
-    // Realizar la consulta en la tabla de doctores usando el número de cédula
-    const results = await dbQueryAsync2('SELECT nombre FROM doctores WHERE cedula = ?', [numeroCedula]);
-    return results;
+    // Consultar la tabla doctores usando el número de cédula
+    const resultsDoctores = await consultarDoctores(numeroCedula);
+
+    if (resultsDoctores.length > 0) {
+      const respuestaDoctores = resultsDoctores[0].nombre; // Cambia "nombre" por el campo que quieras mostrar
+      agent.add(`¡Bienvenido Dr(a). ${respuestaDoctores}!`);
+    } else {
+      agent.add('❌ Lo siento, no encontré información en la tabla de doctores para ese número de cédula.');
+    }
   } catch (error) {
-    console.error('Error al realizar la consulta en la tabla de doctores', error);
-    throw new Error('Hubo un error al procesar tu solicitud en la tabla de doctores.');
+    agent.add(error.message);
   }
 }
+
+
+function obtenerCedulaDesdeMensaje(agent) {
+  const mensajeUsuario = agent.query;
+
+  // Aplicar una expresión regular para extraer la cédula (suponiendo que es un número de 10 dígitos)
+  const regexCedula = /\d{10}/;
+  const match = mensajeUsuario.match(regexCedula);
+
+  // Devolver la cédula o null si no se encuentra
+  return match ? match[0] : null;
+}
+
 
 app.get("/", (req, res) => {
   res.send("¡Bienvenido, estamos dentro!");
@@ -106,6 +98,7 @@ app.post("/", express.json(), (request, response) => {
   const agent = new WebhookClient({ request, response });
   let intentMap = new Map();
   intentMap.set('Saludo', Saludo);
+  intentMap.set('ConsultarDoctores', ConsultarDoctores);
   agent.handleRequest(intentMap);
 });
 
