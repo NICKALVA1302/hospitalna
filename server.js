@@ -17,6 +17,14 @@ const dbConnection = mysql.createConnection({
   database: 'hospitalbot_bot',
 });
 
+
+const dbConnection2 = mysql.createConnection({
+  host: 'mysql-nalvarez.alwaysdata.net',
+  user: 'nalvarez',
+  password: '039216685Aa!',
+  database: 'nalvarez_recordatoriosbd',
+});
+
 // Realizar la conexión a la base de datos
 dbConnection.connect((err) => {
   if (err) {
@@ -28,6 +36,8 @@ dbConnection.connect((err) => {
 
 // Promisificar la función de consulta para poder utilizar async/await
 const dbQueryAsync = util.promisify(dbConnection.query).bind(dbConnection);
+const dbQueryAsync2 = util.promisify(dbConnection2.query).bind(dbConnection2);
+
 
 async function SaludoBD(textoUsuario) {
   try {
@@ -80,7 +90,7 @@ async function Saludo(agent) {
 async function consultarDoctores(numeroCedula) {
   try {
     // Realizar la consulta en la tabla de doctores usando el número de cédula
-    const results = await dbQueryAsync('SELECT nombre FROM doctores WHERE cedula = ?', [numeroCedula]);
+    const results = await dbQueryAsync2('SELECT nombre FROM doctores WHERE cedula = ?', [numeroCedula]);
     return results;
   } catch (error) {
     console.error('Error al realizar la consulta en la tabla de doctores', error);
