@@ -39,24 +39,37 @@ async function SaludoBD(textoUsuario) {
   }
 }
 
+
+
 async function Saludo(agent) {
   validar_saludo = true;
   agent.add('👋 Saludos! Soy 🤖 CuidaBOT ✨, tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+  agent.add('Por favor, ingresa tu número de cédula para continuar.');
 
-  const textoUsuario = agent.query;
+  // Esperar la respuesta del usuario
+  const respuestaUsuario = agent.query;
+  
+  // Verificar si la respuesta es un número de cédula válido
+  const regexCedula = /\d{10}/;
+  const match = respuestaUsuario.match(regexCedula);
 
-  try {
-    const results = await SaludoBD(textoUsuario);
+  if (match) {
+    const numeroCedula = match[0];
 
-    const rows = results;
-    if (rows.length > 0) {
-      const respuesta = rows[0].saludo_respuesta; 
-      agent.add(respuesta);
-    } else {
-      agent.add('Lo siento, no tengo una respuesta para eso.');
+    try {
+      const results = await SaludoBD(numeroCedula);
+
+      if (results.length > 0) {
+        const respuesta = results[0].saludo_respuesta;
+        agent.add(respuesta);
+      } else {
+        agent.add('Lo siento, no tengo una respuesta para eso.');
+      }
+    } catch (error) {
+      agent.add(error.message);
     }
-  } catch (error) {
-    agent.add(error.message);
+  } else {
+    agent.add('Por favor, ingresa un número de cédula válido con 10 dígitos numéricos.');
   }
 }
 
