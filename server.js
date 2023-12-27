@@ -44,20 +44,22 @@ async function SaludoBD(textoUsuario) {
 async function Saludo(agent) {
   validar_saludo = true;
   agent.add('👋 Saludos! Soy 🤖 CuidaBOT ✨, tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+  
+  // Preguntar por el número de cédula
   agent.add('Por favor, ingresa tu número de cédula para continuar.');
 
   // Esperar la respuesta del usuario
   const respuestaUsuarioCedula = agent.query;
 
   // Verificar si la respuesta es un número de cédula válido
-  const regexCedula = /^[0-9]{10}$/; // Ahora la expresión regular asegura exactamente 10 dígitos numéricos
+  const regexCedula = /^[0-9]{10}$/; // Expresión regular para asegurar exactamente 10 dígitos numéricos
   const matchCedula = respuestaUsuarioCedula.match(regexCedula);
 
   if (matchCedula) {
     const numeroCedula = matchCedula[0];
 
-    // Consultar la tabla doctores usando el número de cédula
     try {
+      // Consultar la tabla doctores usando el número de cédula
       const resultsDoctores = await consultarDoctores(numeroCedula);
 
       if (resultsDoctores.length > 0) {
@@ -70,6 +72,7 @@ async function Saludo(agent) {
       agent.add(error.message);
     }
   } else {
+    // Si la cédula no es válida, pedir que la ingrese nuevamente
     agent.add('❌ Por favor, ingresa un número de cédula válido con 10 dígitos numéricos.');
   }
 }
