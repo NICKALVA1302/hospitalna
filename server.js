@@ -80,6 +80,7 @@ async function ConsultarDoctores(agent) {
 
 function obtenerCedulaDesdeMensaje(agent) {
   const mensajeUsuario = agent.query;
+  console.log('Mensaje del usuario:', mensajeUsuario);
 
   // Aplicar una expresión regular para extraer la cédula (suponiendo que es un número de 10 dígitos)
   const regexCedula = /\d{10}/;
