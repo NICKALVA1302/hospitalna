@@ -41,7 +41,7 @@ async function SaludoBD(textoUsuario) {
 
 async function Saludo(agent) {
   validar_saludo = true;
-  const mensajeSaludo = '¡👋 Saludos! Soy 🤖 CuidaBOT ✨, tu asistente médico virtual. ¿En qué puedo ayudarte hoy?';
+  agent.add('👋 Saludos! Soy 🤖 CuidaBOT ✨, tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
 
   const textoUsuario = agent.query;
 
